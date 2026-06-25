@@ -5,6 +5,9 @@
   <ItemGroup>
     <PackageVersion Include="Cratis" Version="20.48.0" />
     <PackageVersion Include="Cratis.Arc.MongoDB" Version="20.48.0" />
+    <PackageVersion Include="Cratis.Arc.OpenApi" Version="20.48.0" />
+    <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="10.0.9" />
+    <PackageVersion Include="Scalar.AspNetCore" Version="1.2.46" />
     <PackageVersion Include="Cratis.Chronicle.Testing" Version="15.35.7" />
     <PackageVersion Include="Cratis.Chronicle.XUnit.Integration" Version="15.35.7" />
     <!-- Analysis -->

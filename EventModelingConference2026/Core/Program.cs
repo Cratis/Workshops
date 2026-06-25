@@ -2,7 +2,8 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System.Globalization;
-using System.Reflection;
+using Cratis.Arc.MongoDB;
+using Scalar.AspNetCore;
 using AspNetCoreArcBuilderExtensions = Microsoft.AspNetCore.Builder.ArcBuilderExtensions;
 
 // Force invariant culture for the Backend
@@ -20,11 +21,13 @@ var builder = WebApplication.CreateBuilder(args)
             options.GeneratedApis.SegmentsToSkipForRoute = 1;
         },
         arcBuilder => AspNetCoreArcBuilderExtensions.WithChronicle(arcBuilder))
-    .AddCratisChronicle(options => options.EventStore = "EventModelingConference2026");
-builder.UseCratisMongoDB();
+    .AddCratisChronicle(
+        options => options.EventStore = "EventModelingConference2026",
+        configure: chronicleBuilder => chronicleBuilder.WithCamelCaseNamingPolicy());
+builder.UseCratisMongoDB(configureMongoDB: mongoBuilder => mongoBuilder.WithCamelCaseNamingPolicy());
 builder.Services.AddControllers();
 builder.Services.AddMvc();
-builder.Services.AddSwaggerGen(options => options.AddConcepts());
+builder.Services.AddOpenApi();
 builder.Services.Configure<ApiBehaviorOptions>(_ => _.SuppressModelStateInvalidFilter = true);
 
 var app = builder.Build();
@@ -39,19 +42,9 @@ app.MapControllers();
 app.UseCratisArc();
 app.UseCratisChronicle();
 
-app.UseSwagger();
-app.UseSwaggerUI(options =>
-{
-    options.SwaggerEndpoint("/swagger/v1/swagger.json", "Swagger");
-    const string resourceName = "Core.SwaggerDark.css";
-    using var stream = Assembly.GetEntryAssembly()!.GetManifestResourceStream(resourceName);
-    if (stream is not null)
-    {
-        using var streamReader = new StreamReader(stream);
-        var styles = streamReader.ReadToEnd();
-        options.HeadContent = $"{options.HeadContent}<style>{styles}</style>";
-    }
-});
+app.MapOpenApi();
+app.MapScalarApiReference();
+
 app.MapFallbackToFile("/index.html");
 
 await app.RunAsync();

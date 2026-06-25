@@ -14,6 +14,9 @@
 
     <ItemGroup>
         <PackageReference Include="Cratis" />
+        <PackageReference Include="Cratis.Arc.OpenApi" />
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
+        <PackageReference Include="Scalar.AspNetCore" />
     </ItemGroup>
 
     <ItemGroup Condition="'$(Configuration)' == 'Release'">
@@ -48,6 +51,5 @@
     </ItemGroup>
 
     <ItemGroup>
-        <EmbeddedResource Include="SwaggerDark.css" />
     </ItemGroup>
 </Project>
