@@ -1,5 +1,7 @@
 @import url(allotment/dist/style.css);
 @import "tailwindcss";
+@source "../";
+@source "../../../node_modules/@cratis/components/dist";
 @import 'primereact/resources/themes/lara-dark-blue/theme.css';
 
 :root {
