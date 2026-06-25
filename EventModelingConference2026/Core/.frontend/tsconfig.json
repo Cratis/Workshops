@@ -16,6 +16,9 @@
             "Authors/*": [
                 "Authors/*"
             ],
+            "Employment/*": [
+                "Employment/*"
+            ],
             "Inventory/*": [
                 "Inventory/*"
             ],

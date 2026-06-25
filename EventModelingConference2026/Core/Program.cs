@@ -20,7 +20,7 @@ var builder = WebApplication.CreateBuilder(args)
             options.GeneratedApis.SegmentsToSkipForRoute = 1;
         },
         arcBuilder => AspNetCoreArcBuilderExtensions.WithChronicle(arcBuilder))
-    .AddCratisChronicle(options => options.EventStore = "Library");
+    .AddCratisChronicle(options => options.EventStore = "EventModelingConference2026");
 builder.UseCratisMongoDB();
 builder.Services.AddControllers();
 builder.Services.AddMvc();
@@ -43,7 +43,7 @@ app.UseSwagger();
 app.UseSwaggerUI(options =>
 {
     options.SwaggerEndpoint("/swagger/v1/swagger.json", "Swagger");
-    const string resourceName = "Library.SwaggerDark.css";
+    const string resourceName = "Core.SwaggerDark.css";
     using var stream = Assembly.GetEntryAssembly()!.GetManifestResourceStream(resourceName);
     if (stream is not null)
     {

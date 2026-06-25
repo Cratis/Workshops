@@ -5,10 +5,11 @@ import { useTheme } from '../Utils/useTheme';
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { LayoutProvider } from '../Layout/Default/context/LayoutContext';
 import { DialogComponents } from '@cratis/arc.react/dialogs';
-import { BusyIndicatorDialog, ConfirmationDialog } from 'Components/Dialogs';
+import { BusyIndicatorDialog, ConfirmationDialog } from '@cratis/components/Dialogs';
 import { DefaultLayout } from '../Layout/Default/DefaultLayout';
 import { IMenuItemGroup } from '../Layout/Default/Sidebar/MenuItem/MenuItem';
 import { Home } from '../Home';
+import { Employees } from '../Employment/Employees/Employees';
 import * as mdIcons from 'react-icons/md';
 
 function App() {
@@ -18,8 +19,8 @@ function App() {
         {
             items: [
                 {
-                    label: 'Authors',
-                    url: '/authors',
+                    label: 'Employees',
+                    url: '/employees',
                     icon: mdIcons.MdOutlinePeople,
                 }
             ]
@@ -33,7 +34,7 @@ function App() {
                     <Routes>
                         <Route element={<DefaultLayout menu={menuItems} />}>
                             <Route path='/' element={<Home />} />
-                            <Route path='/demo' element={<Authors />} />
+                            <Route path='/employees' element={<Employees />} />
                         </Route>
                     </Routes>
                 </BrowserRouter>

@@ -77,6 +77,7 @@ export default defineConfig({
             'Components': fileURLToPath(new URL('../Components', import.meta.url)),
             'Layout':     fileURLToPath(new URL('../Layout', import.meta.url)),
             'Authors':    fileURLToPath(new URL('../Authors', import.meta.url)),
+            'Employment': fileURLToPath(new URL('../Employment', import.meta.url)),
             'Inventory':  fileURLToPath(new URL('../Inventory', import.meta.url)),
             'Lending':    fileURLToPath(new URL('../Lending', import.meta.url)),
         }

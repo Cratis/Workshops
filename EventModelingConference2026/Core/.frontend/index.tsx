@@ -8,13 +8,6 @@ import 'primeicons/primeicons.css';
 import './index.css';
 import React from 'react';
 import App from "./App";
-import { configure as configureMobx } from 'mobx';
-
-Bindings.initialize();
-
-configureMobx({
-    enforceActions: 'never'
-});
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
     <React.StrictMode>
