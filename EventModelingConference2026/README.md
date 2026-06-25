@@ -63,8 +63,9 @@ Open the app at **http://localhost:9000** and navigate to **Employees**.
 ## Option B — Run with the Aspire Composition
 
 The `Composition` project is an [.NET Aspire](https://learn.microsoft.com/dotnet/aspire/) AppHost
-that provisions Chronicle, the chosen database, and the supporting services together, and shows
-them in the Aspire dashboard. Choose a database backend with one of the run scripts:
+that provisions Chronicle and the chosen database, runs the Core backend (pinned to port 5000) and
+its Vite frontend (port 9000), and shows everything in the Aspire dashboard. Choose a database
+backend with the run script:
 
 ```bash
 cd Composition

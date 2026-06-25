@@ -12,14 +12,12 @@
         <PackageReference Include="Aspire.Hosting.MongoDB" />
         <PackageReference Include="Aspire.Hosting.PostgreSQL" />
         <PackageReference Include="Aspire.Hosting.SqlServer" />
-        <PackageReference Include="Cratis.AuthProxy.Aspire" />
         <PackageReference Include="Cratis.Chronicle.Aspire" />
         <PackageReference Include="SharpCompress" />
         <PackageReference Include="Snappier" />
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="../Lending/Lending.csproj" IsAspireProjectResource="true" />
-        <ProjectReference Include="../Members/Members.csproj" IsAspireProjectResource="true" />
+        <ProjectReference Include="../Core/Core.csproj" IsAspireProjectResource="true" />
     </ItemGroup>
 </Project>

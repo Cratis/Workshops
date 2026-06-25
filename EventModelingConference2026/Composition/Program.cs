@@ -2,18 +2,16 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using Aspire.Hosting.ApplicationModel;
-using Cratis.AuthProxy.Aspire;
 using Cratis.Chronicle.Aspire;
 
 var builder = DistributedApplication.CreateBuilder(args);
 
 // Select the database backend. Accepted values (case-insensitive):
 //   mongodb (default), postgresql, mssql, sqlite
-// Override at runtime:
-//   DATABASE_TYPE=postgresql dotnet run --project Library/Composition
+// Override at runtime with the run script, e.g.: ./run.sh postgresql
 var databaseType = (builder.Configuration["DATABASE_TYPE"] ?? "mongodb").ToLowerInvariant();
 
-// Resolve which Chronicle projection sink type id to pass to the microservices.
+// Resolve which Chronicle projection sink type id to pass to the service.
 // Sink type ids are plain string identifiers (see WellKnownSinkTypes). They used to be GUIDs in
 // older Chronicle versions, but are now the string names below.
 // MongoDB sink:  "MongoDB" (WellKnownSinkTypes.MongoDB)
@@ -34,8 +32,6 @@ var vault = builder.AddContainer("vault", "hashicorp/vault")
     .WithHttpEndpoint(port: 8200, targetPort: 8200, name: "http");
 
 // Chronicle — storage backend is selected dynamically based on DATABASE_TYPE.
-// When no configure callback is supplied AddCratisChronicle uses the development image (embedded MongoDB).
-// For any explicit database choice we supply a callback to switch to the production image.
 IResourceBuilder<ChronicleResource> chronicle;
 var vaultEndpoint = vault.GetEndpoint("http");
 
@@ -79,94 +75,19 @@ chronicle
     .WithEndpoint("management", endpoint => endpoint.Port = 8080)
     .WithEndpoint("grpc", endpoint => endpoint.Port = 35000);
 
-// Keycloak for Lending - pre-seeded with librarian and borrower users
-// KC_HOSTNAME pins the public-facing URL used in the discovery document so the browser is
-// redirected to localhost:8090 (not an internal Docker hostname).
-// KC_HOSTNAME_STRICT=true prevents start-dev from overriding KC_HOSTNAME with the request hostname.
-var keycloakLending = builder.AddContainer("keycloak-lending", "quay.io/keycloak/keycloak")
-    .WithArgs("start-dev", "--import-realm")
-    .WithBindMount("./keycloak/lending", "/opt/keycloak/data/import", isReadOnly: true)
-    .WithEnvironment("KEYCLOAK_ADMIN", "admin")
-    .WithEnvironment("KEYCLOAK_ADMIN_PASSWORD", "admin")
-    .WithEnvironment("KC_HOSTNAME", "http://localhost:8090")
-    .WithEnvironment("KC_HOSTNAME_STRICT", "true")
-    .WithHttpEndpoint(port: 8090, targetPort: 8080, name: "http");
-
-// Keycloak for Members - pre-seeded with member users
-var keycloakMembers = builder.AddContainer("keycloak-members", "quay.io/keycloak/keycloak")
-    .WithArgs("start-dev", "--import-realm")
-    .WithBindMount("./keycloak/members", "/opt/keycloak/data/import", isReadOnly: true)
-    .WithEnvironment("KEYCLOAK_ADMIN", "admin")
-    .WithEnvironment("KEYCLOAK_ADMIN_PASSWORD", "admin")
-    .WithEnvironment("KC_HOSTNAME", "http://localhost:8091")
-    .WithEnvironment("KC_HOSTNAME_STRICT", "true")
-    .WithHttpEndpoint(port: 8091, targetPort: 8080, name: "http");
-
-// Lending backend - connected to Chronicle; projection sink type flows from DATABASE_TYPE
-var lending = builder.AddProject<Projects.Lending>("lending")
+// Core backend — connected to Chronicle; the projection sink type flows from DATABASE_TYPE.
+// Pinned to port 5000 so the frontend's Vite dev-server proxy (which targets http://localhost:5000)
+// reaches the backend.
+var core = builder.AddProject<Projects.Core>("core")
     .WithReference(chronicle)
     .WithEnvironment("Cratis__Chronicle__DefaultSinkTypeId", sinkTypeId)
+    .WithEndpoint("http", endpoint => endpoint.Port = 5000)
     .WaitFor(chronicle);
 
-// Members backend - connected to Chronicle; projection sink type flows from DATABASE_TYPE
-var members = builder.AddProject<Projects.Members>("members")
-    .WithReference(chronicle)
-    .WithEnvironment("Cratis__Chronicle__DefaultSinkTypeId", sinkTypeId)
-    .WaitFor(chronicle);
-
-// Lending frontend (Vite dev server via yarn, port 9000)
-var lendingFrontend = builder.AddViteApp("lending-frontend", "../Lending")
+// Core frontend (Vite dev server via yarn, port 9000)
+builder.AddViteApp("core-frontend", "../Core")
     .WithYarn()
-    .WithHttpEndpoint(port: 9000, targetPort: 9000, name: "http", isProxied: false);
-
-// Members frontend (Vite dev server via yarn, port 9001)
-var membersFrontend = builder.AddViteApp("members-frontend", "../Members")
-    .WithYarn()
-    .WithHttpEndpoint(port: 9001, targetPort: 9001, name: "http", isProxied: false);
-
-var keycloakLendingEndpoint = keycloakLending.GetEndpoint("http");
-var keycloakMembersEndpoint = keycloakMembers.GetEndpoint("http");
-
-// AuthProxy for Lending - authenticates users via Keycloak and proxies to Lending backend/frontend.
-// Authority is set to the public localhost URL (what the browser redirects to and what the token
-// issuer claim uses). BackchannelAuthority is the internal Docker DNS URL used exclusively for
-// server-to-server calls (discovery fetch, token exchange) from inside the AuthProxy container.
-builder.AddAuthProxy("authproxy-lending")
-    .WithHttpEndpoint(port: 7000, targetPort: 8080, name: "http")
-    .WithBackend("main", lending)
-    .WithFrontend("main", lendingFrontend)
-    .WithOidcProvider(
-        "Keycloak",
-        OidcProviderType.Custom,
-        authority: "http://localhost:8090/realms/lending",
-        clientId: "lending-app",
-        clientSecret: "lending-secret")
-    .WithEnvironment(ctx =>
-        ctx.EnvironmentVariables["Cratis__AuthProxy__Authentication__OidcProviders__0__BackchannelAuthority"] =
-            ReferenceExpression.Create($"{keycloakLendingEndpoint}/realms/lending"))
-    .WithSpecifiedTenantResolution("default")
-    .WaitFor(keycloakLending)
-    .WaitFor(lending)
-    .WaitFor(lendingFrontend);
-
-// AuthProxy for Members - authenticates users via Keycloak and proxies to Members backend/frontend.
-builder.AddAuthProxy("authproxy-members")
-    .WithHttpEndpoint(port: 7001, targetPort: 8080, name: "http")
-    .WithBackend("main", members)
-    .WithFrontend("main", membersFrontend)
-    .WithOidcProvider(
-        "Keycloak",
-        OidcProviderType.Custom,
-        authority: "http://localhost:8091/realms/members",
-        clientId: "members-app",
-        clientSecret: "members-secret")
-    .WithEnvironment(ctx =>
-        ctx.EnvironmentVariables["Cratis__AuthProxy__Authentication__OidcProviders__0__BackchannelAuthority"] =
-            ReferenceExpression.Create($"{keycloakMembersEndpoint}/realms/members"))
-    .WithSpecifiedTenantResolution("default")
-    .WaitFor(keycloakMembers)
-    .WaitFor(members)
-    .WaitFor(membersFrontend);
+    .WithHttpEndpoint(port: 9000, targetPort: 9000, name: "http", isProxied: false)
+    .WaitFor(core);
 
 await builder.Build().RunAsync();
-
