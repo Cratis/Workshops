@@ -1,0 +1,7 @@
+[
+    {
+        "name": "Core",
+        "path": "${workspaceFolder}/EventModelingConference2026/Core",
+        "outputPath": "${workspaceFolder}/EventModelingConference2026/Core/bin/Debug/net10.0/Core.dll"
+    }
+]

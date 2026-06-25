@@ -1,0 +1,112 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "launch",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "cwd": "${input:project}",
+            "program": "${input:target}",
+            "stopAtEntry": false,
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Development"
+            },
+            "internalConsoleOptions": "openOnSessionStart"
+        },
+        {
+            "name": "launch-njmc",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${input:target}",
+            "cwd": "${input:project}",
+            "stopAtEntry": false,
+            "justMyCode": false,
+            "requireExactSource": false,
+            "enableStepFiltering": false,
+            "symbolOptions": {
+                "moduleFilter": {
+                    "mode": "loadOnlyIncluded",
+                    "includedModules": [
+                        "Cratis.*"
+                    ]
+                },
+                "searchPaths": [
+                    "/Users/einari/.nuget/packages/cratis.chronicle/14.12.4-pr2305.3fc0118/lib/net10.0/",
+                ],
+                "searchMicrosoftSymbolServer": false,
+                "searchNuGetOrgSymbolServer": true
+            },
+            "suppressJITOptimizations": true,
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Development"
+            },
+            "sourceFileMap": {
+                "/home/runner/work/orleans/orleans": "/Volumes/Code/Microsoft/dotnet/orleans",
+                "/home/runner/work/chronicle/chronicle": "/Volumes/Code/Cratis/Chronicle",
+                "/home/runner/work/ApplicationModel/ApplicationModel": "/Volumes/Code/Cratis/ApplicationModel"
+            }
+        },
+        {
+            "name": ".NET Core Attach",
+            "type": "coreclr",
+            "request": "attach"
+        },
+        {
+            "name": "Frontend: Launch in Integrated Browser",
+            "type": "editor-browser",
+            "request": "launch",
+            "url": "http://localhost:9000",
+            "webRoot": "${workspaceFolder}/Source/Core",
+            "preLaunchTask": "frontend: dev",
+            "presentation": {
+                "group": "web",
+                "order": 10
+            }
+        },
+        {
+            "name": "Frontend: Attach to Integrated Browser",
+            "type": "editor-browser",
+            "request": "attach",
+            "urlFilter": "http://localhost:9000/*",
+            "webRoot": "${workspaceFolder}/Source/Core",
+            "presentation": {
+                "group": "web",
+                "order": 11
+            }
+        }
+    ],
+    "compounds": [
+        {
+            "name": "Backend + Frontend: Launch in Integrated Browser",
+            "configurations": [
+                "launch",
+                "Frontend: Launch in Integrated Browser"
+            ],
+            "stopAll": true,
+            "presentation": {
+                "group": "web",
+                "order": 12
+            }
+        }
+    ],
+    "inputs": [
+        {
+            "id": "project",
+            "type": "command",
+            "command": "dotnet-build-commands.selectProjectForLaunch",
+            "args": {
+                "file": "${workspaceFolder}/.vscode/projects.json"
+            }
+        },
+        {
+            "id": "target",
+            "type": "command",
+            "command": "dotnet-build-commands.getTarget"
+        }
+    ]
+}

@@ -1,0 +1,72 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build",
+            "command": "dotnet",
+            "type": "process",
+            "isBuildCommand": true,
+            "args": [
+                "build",
+                "--no-restore",
+                "/p:MaxCpuCount=0",
+                "/p:GenerateFullPaths=true",
+                "/clp:ErrorsOnly",
+                "/consoleloggerparameters:NoSummary",
+                "/p:UseSharedCompilation=true",
+                "${input:project}"
+            ],
+            "problemMatcher": "$msCompile",
+            "runOptions": {
+                "reevaluateOnRerun": false
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "frontend: dev",
+            "type": "shell",
+            "command": "yarn dev",
+            "options": {
+                "cwd": "${workspaceFolder}/Source/Core"
+            },
+            "isBackground": true,
+            "problemMatcher": {
+                "owner": "custom",
+                "pattern": {
+                    "regexp": "."
+                },
+                "background": {
+                    "activeOnStart": true,
+                    "beginsPattern": ".",
+                    "endsPattern": "Local:\\s+http://localhost:[0-9]+/?"
+                }
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated"
+            }
+        },
+        {
+            "label": "kill-testhost",
+            "command": "pkill",
+            "args": [
+                "-f",
+                "testhost"
+            ],
+            "type": "process"
+        }
+    ],
+    "inputs": [
+        {
+            "id": "project",
+            "type": "command",
+            "command": "dotnet-build-commands.selectProject",
+            "args": {
+                "file": "${workspaceFolder}/.vscode/projects.json"
+            }
+        }
+    ]
+}
