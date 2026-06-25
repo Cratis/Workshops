@@ -67,8 +67,9 @@ export default defineConfig({
                 target: 'http://localhost:5000',
                 ws: true
             },
-            '/swagger': {
-                target: 'http://localhost:5000'
+            '/.cratis': {
+                target: 'http://localhost:5000',
+                ws: true
             }
         }
     },
