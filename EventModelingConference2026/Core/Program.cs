@@ -2,6 +2,7 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System.Globalization;
+using Core.Identity;
 using Cratis.Arc.MongoDB;
 using Scalar.AspNetCore;
 using AspNetCoreArcBuilderExtensions = Microsoft.AspNetCore.Builder.ArcBuilderExtensions;
@@ -28,11 +29,16 @@ builder.UseCratisMongoDB(configureMongoDB: mongoBuilder => mongoBuilder.WithCame
 builder.Services.AddControllers();
 builder.Services.AddMvc();
 builder.Services.AddOpenApi();
+builder.Services.AddMicrosoftIdentityPlatformIdentityAuthentication();
+builder.Services.AddIdentityProvider<IdentityDetailsProvider>();
 builder.Services.Configure<ApiBehaviorOptions>(_ => _.SuppressModelStateInvalidFilter = true);
 
 var app = builder.Build();
 
 app.UseRouting();
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.UseDefaultFiles();
 app.UseStaticFiles();
