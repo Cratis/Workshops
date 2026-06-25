@@ -1,18 +1,51 @@
 services:
   # ─── MongoDB (default profile) ────────────────────────────────────────────────
-  # Chronicle development image bundles MongoDB — no extra container needed.
+  # Slim Chronicle image + a dedicated MongoDB running as a single-node replica set.
   chronicle-mongodb:
-    image: cratis/chronicle:latest-development
+    image: cratis/chronicle:latest-development-slim
     profiles: [mongodb, ""]
+    depends_on:
+      - mongodb
+      - mongodb-init
     environment:
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://aspire-dashboard:18889
+      - Cratis__Chronicle__Storage__Type=MongoDB
+      - Cratis__Chronicle__Storage__ConnectionDetails=mongodb://mongodb:27017/?directConnection=true
     ports:
-      - "27017:27017"
       - "8080:8080"
-      - "11111:11111"
-      - "30000:30000"
       - "35000:35000"
     pull_policy: always
+
+  mongodb:
+    image: mongo:8
+    profiles: [mongodb, ""]
+    command: ["mongod", "--replSet", "rs0", "--bind_ip_all"]
+    ports:
+      - "27017:27017"
+
+  # One-shot container that initiates the replica set once MongoDB is reachable.
+  mongodb-init:
+    image: mongo:8
+    profiles: [mongodb, ""]
+    depends_on:
+      - mongodb
+    restart: "no"
+    command:
+      - /bin/bash
+      - -lc
+      - |
+        until mongosh --host mongodb --quiet --eval "db.adminCommand('ping')" >/dev/null 2>&1; do
+          sleep 1
+        done
+        mongosh --host mongodb --quiet --eval "
+        try {
+          rs.status();
+        } catch (e) {
+          rs.initiate({
+            _id: 'rs0',
+            members: [{ _id: 0, host: 'localhost:27017' }]
+          });
+        }"
 
   # ─── PostgreSQL ────────────────────────────────────────────────────────────────
   postgres:
@@ -26,7 +59,7 @@ services:
       - "5432:5432"
 
   chronicle-postgresql:
-    image: cratis/chronicle:latest
+    image: cratis/chronicle:latest-development-slim
     profiles: [postgresql]
     depends_on: [postgres]
     environment:
@@ -49,7 +82,7 @@ services:
       - "1433:1433"
 
   chronicle-mssql:
-    image: cratis/chronicle:latest
+    image: cratis/chronicle:latest-development-slim
     profiles: [mssql]
     depends_on: [mssql]
     environment:
@@ -63,7 +96,7 @@ services:
 
   # ─── SQLite ────────────────────────────────────────────────────────────────────
   chronicle-sqlite:
-    image: cratis/chronicle:latest
+    image: cratis/chronicle:latest-development-slim
     profiles: [sqlite]
     environment:
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://aspire-dashboard:18889

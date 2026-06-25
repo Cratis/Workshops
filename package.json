@@ -1,7 +1,7 @@
 {
     "private": true,
     "workspaces": [
-        "EventModelingConference2026/Core"
+        "./EventModelingConference2026/Core"
     ],
     "engines": {
         "node": ">=23.0.0"
