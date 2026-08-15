@@ -34,7 +34,7 @@ public Task MethodName(TEvent @event, EventContext context)
 
 - **First parameter** — the event type. This determines which events the method subscribes to.
 - **Second parameter** — `EventContext` (optional). Omit if event metadata is not needed. A reactor method takes no more than two parameters.
-- **Return type** — `Task` or `void`, or a side-effect type (`TEvent`, `EventForEventSourceId`, or a collection of either) returned directly (sync) or wrapped in `Task<...>` (async). Prefer `Task`/async for real side effects, but synchronous returns are fully supported — there is no "always async" requirement.
+- **Return type** — `Task` or `void`, or a side-effect type (`TEvent`, `ReactorSideEffect`, or a collection of either) returned directly (sync) or wrapped in `Task<...>` (async). Prefer `Task`/async for real side effects, but synchronous returns are fully supported — there is no "always async" requirement.
 - **Method name** — can be anything descriptive. The name is for readability, not dispatch.
 
 ## Handling replay differently — `[Replay]`
@@ -65,7 +65,7 @@ public class OrderProcessing(IShippingService shipping) : IReactor
 {
     public async Task OrderPlaced(OrderPlaced @event, EventContext context, Order order, IPricingService pricing)
     {
-        // 'order' is the read model, materialized strongly consistent for this event.
+        // 'order' is the read model, resolved by Chronicle for this event's key.
         // 'pricing' is resolved from the service provider.
         await shipping.Schedule(order, pricing.PriceFor(order));
     }
@@ -75,7 +75,7 @@ public class OrderProcessing(IShippingService shipping) : IReactor
 How each parameter is resolved:
 
 - **`EventContext`** — receives the event context (position independent).
-- **A read model** — a type that has a reducer or a projection (declarative or model-bound). It is materialized on demand from that reducer or projection, making it **strongly consistent** at the point the reactor runs. Read models are resolved directly by Chronicle — they never go through the service provider.
+- **A read model** — a type that has a reducer or a projection (declarative or model-bound). Chronicle resolves it directly — read models never go through the service provider. A **materialized** read model (the default, for projections and reducers alike) is read from its sink, so it is **eventually consistent** — as current as its observer. Mark it **`[Passive]`** when the reactor needs it **strongly consistent**: a passive read model has no sink, so Chronicle computes it on demand from the events at the point the reactor runs.
 - **Any other type** — resolved from the service provider (constructor injection on the reactor itself is still preferred for collaborators used by every method).
 
 ### Resolving the read model key
@@ -147,9 +147,7 @@ public Task<IEnumerable<EventForEventSourceId>> Handle(AnEvent @event, EventCont
 
 ### Cross-stream via `EventForEventSourceId`
 
-To append a side-effect event to a **different** event source, return `EventForEventSourceId(id, @event)` (single or `IEnumerable<EventForEventSourceId>`) — the same cross-stream wrapper a command `Handle()` uses. It carries the `EventStreamType`, `EventStreamId`, `EventSourceType`, `Subject`, `Occurred`, `Tags` and `Causation` per event.
-
-> There is no return type that selects a different **event sequence**. A returned side effect always goes to the default event log; to reach the outbox or another named sequence, inject `IEventStore` and use `GetEventSequence(...)`.
+To append a side-effect event to a **different** event source, return `EventForEventSourceId(id, @event)` (single or `IEnumerable<EventForEventSourceId>`) — the same cross-stream wrapper a command `Handle()` uses. Reach for `ReactorSideEffect` instead when you also need to set the `EventSequenceId`, stream type, source type, or `Subject`.
 
 ```csharp
 public Task<IEnumerable<EventForEventSourceId>> Handle(AnEvent @event, EventContext context) =>
@@ -159,6 +157,7 @@ public Task<IEnumerable<EventForEventSourceId>> Handle(AnEvent @event, EventCont
     ]);
 ```
 
+> **Chronicle version note:** reactor side-effect handling of `EventForEventSourceId` wrappers ships in an upcoming Chronicle release. On earlier versions, target another event source with `ReactorSideEffect { EventSourceId = … }` instead.
 
 ## External event stores (outbox / inbox)
 
