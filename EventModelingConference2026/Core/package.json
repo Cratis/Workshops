@@ -19,7 +19,7 @@
     "@cratis/arc": "22.1.0",
     "@cratis/arc.react": "22.1.0",
     "@cratis/arc.vite": "22.1.0",
-    "@cratis/components": "^3.4.0",
+    "@cratis/components": "^3.5.0",
     "allotment": "1.20.5",
     "echarts": "6.1.0",
     "mobx": "7.0.3",
