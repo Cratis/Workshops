@@ -13,7 +13,7 @@ paths:
 
 `.ai/` is the **single source of truth** for all AI assistant configuration in this repository — rules, agents, prompts, skills, and hooks. Everything is written once in `.ai/` and surfaced to each AI tool through adapters: folder symlinks, per-file symlinks, or small **path-reference files** whose body is the relative path to the canonical source.
 
-> **Never edit files under `.github/`, `.claude/`, `.agents/`, or the root `AGENTS.md` directly.** They are all adapters. Any direct edit would be lost the next time the canonical source changes, and would diverge from it.
+> **Edit canonical local sources, not adapter targets.** When root `AGENTS.md` or a tool file is a symlink/path-reference adapter, change its canonical source. A regular repository-owned root bootstrap or private overlay may be maintained deliberately; do not replace it with the shared corpus. Never hand-edit generated immutable distribution output.
 
 ## Folder structure
 
@@ -92,7 +92,7 @@ A Cratis repo is one of two **profiles** and the corpus serves both from this on
 - **application** — building an app *on* Cratis (event-sourced CQRS, vertical slices, MVVM frontend). The bulk of the rules.
 - **framework** — contributing to a Cratis framework repo *itself* (Arc, Chronicle, Fundamentals, Components — libraries). See `framework.md`.
 
-A profile-specific rule declares **`profile: application`** or **`profile: framework`** in its frontmatter; a rule with **no `profile:` is universal** and applies in both. `general.md` routes by profile (its application sections are clearly bannered; `framework.md` is the framework counterpart). `applyTo`/`paths` globs scope by *file type*; `profile:` scopes by *repo type* — both are needed because every repo has `.cs`/`.tsx` files. (Propagation can later filter by profile so a framework repo receives only `universal` + `framework`; until then, the `general.md` routing + per-rule banners make the AI self-select.)
+A profile-specific rule declares **`profile: application`** or **`profile: framework`** in its frontmatter; a rule with **no `profile:` is universal** and applies in both. `general.md` routes by profile (its application sections are clearly bannered; `framework.md` is the framework counterpart). `applyTo`/`paths` globs scope by *file type*; `profile:` scopes by *repo type* — both are needed because every repo has `.cs`/`.tsx` files. (Reviewed distribution profiles select applicable shared capabilities; legacy local `general.md` routing and per-rule banners remain in place during canary. Do not restart propagation.)
 
 ## Adding a new rule
 
@@ -162,10 +162,22 @@ An adapter's target (the symlink target, or the path-reference file's body) uses
 | `AGENTS.md` (repo root, Codex) | `.ai/rules/general.md` |
 | `.agents/skills`, `.github/prompts`, `.github/skills`, `.claude/agents`, `.claude/skills` (folder symlinks) | the matching `.ai/<sub>` folder |
 
-## Propagation and adapters
+## Distribution and local adapters
 
-The cross-repository propagation workflow is a broadcast sync: any Cratis repository can be the source, and changes propagate to the other repositories, including `Cratis/AI` when the source is not `Cratis/AI`. Propagation normalizes known adapter paths before broadcasting them. When the matching canonical `.ai` file exists in the source tree, an adapter path is written as the expected symlink or path-reference file, even if the source repository currently contains copied content at that adapter path. Do not materialize adapter targets into copied `.ai` content in tool-specific files; that breaks the `.ai/` source-of-truth model and causes drift between adapters and canonical corpus files.
+Cross-repository broadcast, all-to-all propagation, and reverse synchronization
+are retired. Do not run legacy propagation or turn a consuming repository into a
+hub. Shared public-safe behavior is authored and reviewed in `Cratis/AI`, generated
+into `Cratis/AI.Distribution`, and consumed only at an immutable reviewed version
+after release gates pass. Propose sanitized reusable improvements upstream for
+review; never reverse-sync private trees or local facts.
+
+These legacy repository-local rules remain locally maintained during canary;
+this is not permission to patch generated immutable distribution bytes or copy
+whole AI trees. Preserve private/project overlays, local skills, and minimal
+host bootstraps. Keep legacy adapters and actual workflows in place until an
+approved replacement passes canary and reviewed retirement gates. Update shared
+packages via approved exact-version pins; roll back by version.
 
 ## Shared workflows
 
-Workflow files intended to be synced to other repositories live in `.ai/workflows/`. They follow the same symlink pattern — the propagate workflow copies `.ai/workflows/` content to target repositories.
+Existing `.ai/workflows/` files are legacy local compatibility assets, not a broadcast source. Do not invoke propagation or remove actual workflows in a rule edit. Shared workflow updates require reviewed immutable references and consuming-repository review.

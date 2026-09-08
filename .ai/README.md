@@ -1,6 +1,6 @@
 # Shared AI Assistant Configuration
 
-`.ai/` is the **single source of truth** for all AI-assistant configuration — rules, agents, prompts, skills, hooks. Everything is written once here and surfaced to each tool through adapters (path-reference files or symlinks). **Never edit files under `.github/`, `.claude/`, `.agents/`, or root `AGENTS.md` directly** — they are adapters, and any direct edit is lost the next time the source changes.
+`.ai/` is the **single source of truth** for all AI-assistant configuration — rules, agents, prompts, skills, hooks. Everything is written once here and surfaced to each tool through adapters (path-reference files or symlinks). Edit the canonical source when a tool file or root `AGENTS.md` is a symlink/path-reference adapter. Preserve and deliberately maintain regular repository-owned bootstraps and private overlays; never patch generated immutable distribution output.
 
 ## Authority model
 
@@ -45,8 +45,20 @@ Scoped rules include both `applyTo` (Copilot matching) and `paths` (Claude match
 
 Run `.ai/hooks/scripts/validate-ai-setup.sh` after changing rules/skills/adapters — it validates frontmatter, adapter integrity (path-reference *or* symlink resolving to the right rule), resolving adapter targets, Codex adapters, and content-drift guards (warnings). Structural/adapter/Codex failures are fatal; drift guards are advisory warnings. Fix reported issues before committing.
 
-## Propagation
+## Distribution and local adapters
 
-This repo is the hub that can propagate `.ai/` content to other Cratis repositories. The propagation workflow and any profile/repo-type scoping are managed separately from the corpus content itself — see `rules/managing-ai-rules.md` for how propagation interacts with adapters.
+Cross-repository broadcast, all-to-all propagation, and reverse synchronization
+are retired. Do not run legacy propagation or turn a consuming repository into a
+hub. Shared public-safe behavior is authored and reviewed in `Cratis/AI`, generated
+into `Cratis/AI.Distribution`, and consumed only at an immutable reviewed version
+after release gates pass. Propose sanitized reusable improvements upstream for
+review; never reverse-sync private trees or local facts.
+
+These legacy repository-local rules remain locally maintained during canary;
+this is not permission to patch generated immutable distribution bytes or copy
+whole AI trees. Preserve private/project overlays, local skills, and minimal
+host bootstraps. Keep legacy adapters and actual workflows in place until an
+approved replacement passes canary and reviewed retirement gates. Update shared
+packages via approved exact-version pins; roll back by version.
 
 See `rules/managing-ai-rules.md` for the full guide on adding, updating, and renaming rules/skills/agents/prompts/hooks.
