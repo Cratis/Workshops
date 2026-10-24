@@ -14,6 +14,7 @@ export const TopBar = () => {
                 <div className={css.sidebarToggle}>
                     <button
                         type="button"
+                        aria-label="Toggle sidebar"
                         onClick={toggleLeftSidebarOpen}
                         className={css.hamburgerMenuButton}>
                         <FaBars />
