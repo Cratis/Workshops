@@ -22,7 +22,17 @@
 }
 
 .hamburgerMenuButton {
+  background: transparent;
+  border: 0;
+  color: inherit;
+  cursor: pointer;
+  padding: 0.75rem 1rem;
+  border-radius: var(--border-radius);
   outline: none !important;
+}
+
+.hamburgerMenuButton:hover {
+  background: var(--surface-c);
 }
 
 .hamburgerMenuButton:focus,

@@ -2,7 +2,7 @@
 @import "tailwindcss";
 @source "../";
 @source "../../../node_modules/@cratis/components/dist";
-@import 'primereact/resources/themes/lara-dark-blue/theme.css';
+@import '../public/themes/lara-dark-blue/theme.css';
 
 :root {
   font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
@@ -41,7 +41,7 @@ body {
   min-width: 320px;
   min-height: 100vh;
   background-color: var(--surface-ground);
-  color: var(--highlight-text-color);
+  color: var(--text-color);
 }
 
 h1 {

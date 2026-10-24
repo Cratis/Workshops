@@ -3,7 +3,6 @@
 
 import { generatePath, NavLink, useParams } from "react-router-dom";
 import css from "./MenuItem.module.css";
-import { Ripple } from "primereact/ripple";
 import { IconType } from "react-icons/lib";
 import { useLayoutContext } from "../../context/LayoutContext";
 import { useContext, useEffect, useState } from "react";
@@ -41,9 +40,8 @@ export const MenuItem = ({ item, basePath, ...rest }: IMenuItemProps) => {
         <NavLink to={resolvedPath}
                  {...rest}
                  className={({ isActive, isPending }) =>
-                     css.menuItem + ' ' + (isPending ? css.pending : isActive ? css.active : "") + " p-ripple "
+                     css.menuItem + ' ' + (isPending ? css.pending : isActive ? css.active : "")
                  }>
-            <Ripple/>
             <div className={css.icon}>
                 {item.icon && <item.icon size='1.5rem'/>}
             </div>
