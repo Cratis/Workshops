@@ -18,11 +18,3 @@ global using Cratis.Chronicle.Reducers;
 global using Cratis.Chronicle.Transactions;
 global using Cratis.Concepts;
 global using Microsoft.AspNetCore.Mvc;
-#if DEBUG
-global using Cratis.Chronicle.XUnit;
-global using Cratis.Chronicle.XUnit.Integration;
-global using Cratis.Specifications;
-global using NSubstitute;
-global using NSubstitute.Core;
-global using Xunit;
-#endif
