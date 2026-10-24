@@ -2,8 +2,7 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 import { ComponentType } from 'react';
-import { Column } from 'primereact/column';
-import { DataPage, MenuItem } from '@cratis/components/DataPage';
+import { DataPage, MenuItem, Column } from '@cratis/components/DataPage';
 import { useDialog } from '@cratis/arc.react/dialogs';
 import * as mdIcons from 'react-icons/md';
 import { ObserveAll } from './Listing/ObserveAll';
