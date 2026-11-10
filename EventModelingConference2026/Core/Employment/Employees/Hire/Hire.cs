@@ -22,17 +22,8 @@ public class HireEmployeeValidator : CommandValidator<HireEmployee>
 {
     public HireEmployeeValidator()
     {
-        RuleFor(command => command.Name).NotNull().WithMessage("Employee name must be provided");
-        RuleFor(command => command.Name.Value)
-            .NotEmpty()
-            .When(command => command.Name is not null)
-            .WithMessage("Employee name must be provided");
-
-        RuleFor(command => command.Department).NotNull().WithMessage("Department must be provided");
-        RuleFor(command => command.Department.Value)
-            .NotEmpty()
-            .When(command => command.Department is not null)
-            .WithMessage("Department must be provided");
+        RuleFor(command => command.Name).NotEmpty().WithMessage("Employee name must be provided");
+        RuleFor(command => command.Department).NotEmpty().WithMessage("Department must be provided");
     }
 }
 
