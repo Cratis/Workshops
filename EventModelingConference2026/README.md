@@ -7,14 +7,14 @@ containing two slices: `Hire` (state change) and `Listing` (state view).
 
 The stack:
 
-- **Backend** — .NET 10 / ASP.NET Core, Cratis Arc for CQRS, Cratis Chronicle for event sourcing.
+- **Backend** — .NET 11 / ASP.NET Core, Cratis Arc for CQRS, Cratis Chronicle for event sourcing.
 - **Read models** — MongoDB, materialized by Chronicle projections (configured for camelCase).
 - **Frontend** — React + TypeScript (Vite) with PrimeReact, served on its own dev server.
 - **API reference** — [Scalar](https://scalar.com/) over the generated OpenAPI document.
 
 ## Prerequisites
 
-- [.NET 10 SDK](https://dotnet.microsoft.com/download)
+- [.NET 11 SDK](https://dotnet.microsoft.com/download)
 - [Docker](https://www.docker.com/) — runs Chronicle and the database
 - [Node.js](https://nodejs.org/) + [Yarn](https://yarnpkg.com/)
 
