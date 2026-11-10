@@ -97,5 +97,5 @@ Scalar lists every generated endpoint, including the `Employment.Employees.Hire`
 | Frontend | http://localhost:9000 |
 | Backend API | http://localhost:5000 |
 | Scalar API reference | http://localhost:5000/scalar/v1 |
-| Chronicle Workbench | http://localhost:8080 |
+| Chronicle Workbench | http://localhost:35000 |
 | Aspire dashboard | http://localhost:18888 |

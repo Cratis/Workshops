@@ -31,7 +31,7 @@ fi
 
 echo "▶ Starting infrastructure with docker compose (profile: $DATABASE)..."
 docker compose --profile "$DATABASE" -f "$ROOT_DIR/docker-compose.yml" up -d
-echo "✓ Chronicle  → http://localhost:8080  (Workbench)"
+echo "✓ Chronicle  → http://localhost:35000  (Workbench)"
 
 if [[ "$DOCKER_ONLY" == true ]]; then
     echo "✓ Infrastructure is up. Skipping app start (--docker-only)."
