@@ -80,6 +80,9 @@ projection **sink** for that database and passes it to the services via
 `Cratis__Chronicle__DefaultSinkTypeId` — `MongoDB` for the MongoDB backend, `SQL` for the
 relational backends. The Aspire dashboard is available at **http://localhost:18888**.
 
+The AppHost uses the Aspire CLI bundle, so the first run may download Aspire tooling and needs
+network access. A separately installed Aspire CLI is not required.
+
 ## Viewing the API with Scalar
 
 The backend exposes its OpenAPI document and a Scalar API reference UI:
