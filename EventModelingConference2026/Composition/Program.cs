@@ -69,10 +69,9 @@ else
         .WithHashiCorpVault(vaultEndpoint, "root"));
 }
 
-// Pin to stable host ports. Management (workbench) runs on 8080, gRPC on 35000.
+// Pin to a stable host port. Chronicle serves gRPC, the Workbench and its API on 35000.
 chronicle
     .WaitFor(vault)
-    .WithEndpoint("management", endpoint => endpoint.Port = 8080)
     .WithEndpoint("grpc", endpoint => endpoint.Port = 35000);
 
 // Core backend — connected to Chronicle; the projection sink type flows from DATABASE_TYPE.

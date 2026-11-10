@@ -22,7 +22,7 @@ workshops use ASP.NET Core on the backend and React + TypeScript on the frontend
 
 ## Prerequisites
 
-- [.NET 10 SDK](https://dotnet.microsoft.com/download)
+- [.NET 11 SDK](https://dotnet.microsoft.com/download)
 - [Docker](https://www.docker.com/) (for the Chronicle event store and databases)
 - [Node.js](https://nodejs.org/) with [Yarn](https://yarnpkg.com/) (the repo uses Yarn workspaces)
 

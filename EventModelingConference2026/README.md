@@ -7,14 +7,14 @@ containing two slices: `Hire` (state change) and `Listing` (state view).
 
 The stack:
 
-- **Backend** — .NET 10 / ASP.NET Core, Cratis Arc for CQRS, Cratis Chronicle for event sourcing.
+- **Backend** — .NET 11 / ASP.NET Core, Cratis Arc for CQRS, Cratis Chronicle for event sourcing.
 - **Read models** — MongoDB, materialized by Chronicle projections (configured for camelCase).
 - **Frontend** — React + TypeScript (Vite) with PrimeReact, served on its own dev server.
 - **API reference** — [Scalar](https://scalar.com/) over the generated OpenAPI document.
 
 ## Prerequisites
 
-- [.NET 10 SDK](https://dotnet.microsoft.com/download)
+- [.NET 11 SDK](https://dotnet.microsoft.com/download)
 - [Docker](https://www.docker.com/) — runs Chronicle and the database
 - [Node.js](https://nodejs.org/) + [Yarn](https://yarnpkg.com/)
 
@@ -80,6 +80,9 @@ projection **sink** for that database and passes it to the services via
 `Cratis__Chronicle__DefaultSinkTypeId` — `MongoDB` for the MongoDB backend, `SQL` for the
 relational backends. The Aspire dashboard is available at **http://localhost:18888**.
 
+The AppHost uses the Aspire CLI bundle, so the first run may download Aspire tooling and needs
+network access. A separately installed Aspire CLI is not required.
+
 ## Viewing the API with Scalar
 
 The backend exposes its OpenAPI document and a Scalar API reference UI:
@@ -97,5 +100,5 @@ Scalar lists every generated endpoint, including the `Employment.Employees.Hire`
 | Frontend | http://localhost:9000 |
 | Backend API | http://localhost:5000 |
 | Scalar API reference | http://localhost:5000/scalar/v1 |
-| Chronicle Workbench | http://localhost:8080 |
+| Chronicle Workbench | http://localhost:35000 |
 | Aspire dashboard | http://localhost:18888 |
